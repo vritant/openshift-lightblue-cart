@@ -1,18 +1,16 @@
 ---
-Name: jbosseap
-Cartridge-Short-Name: JBOSSEAP
-Display-Name: JBoss Enterprise Application Platform 6
-Description: Market-leading open source enterprise platform for next-generation, highly
-  transactional enterprise Java applications. Build and deploy enterprise Java in
-  the cloud.
-Version: '6'
+Name: lightblue
+Cartridge-Short-Name: LIGHTBLUE
+Display-Name: lightblue deployed on JBoss Enterprise Application Platform 6
+Description: Cloud focused data services with dynamic querying, versioned schemas, and robust security.
+Version: '1.0'
 License: LGPL
 License-Url: http://www.gnu.org/copyleft/lesser.txt
 Vendor: Red Hat
-Cartridge-Version: 0.0.19
+Cartridge-Version: 0.0.1
 Compatible-Versions:
-- 0.0.18
-Cartridge-Vendor: redhat
+- 0.0.1
+Cartridge-Vendor: jewzaam
 Categories:
 - service
 - web_framework
@@ -20,15 +18,21 @@ Categories:
 - jboss
 - java_ee_6
 - xpaas
-Website: http://www.redhat.com/products/jbossenterprisemiddleware/application-platform/
+- lightblue
+Website: http://lightblue.io/
 Help-Topics:
-  Developer Center: https://www.openshift.com/developers
+  User Guide: http://docs.lightblue.io/
+  Developer Guide: http://dev.docs.lightblue.io/
+  Source: http://github.com/lightblue-platform/
 Provides:
 - jbosseap-6
 - jbosseap
 - jboss-eap6
 - jbosseap-standalone
 - jboss-eap6-standalone
+- lightblue
+Requires:
+- mongodb-2.4
 Publishes:
   publish-jboss-cluster:
     Type: NET_TCP:jbosseap-cluster-info
