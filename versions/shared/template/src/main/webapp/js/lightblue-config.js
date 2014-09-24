@@ -1,1 +1,0 @@
-var metadataServicePath = "/metadatamgmt/rest-request/";
