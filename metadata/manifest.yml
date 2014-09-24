@@ -4,6 +4,7 @@ Cartridge-Short-Name: LIGHTBLUE
 Display-Name: lightblue deployed on JBoss Enterprise Application Platform 6
 Description: Cloud focused data services with dynamic querying, versioned schemas, and robust security.
 Version: '1.0'
+Source-Url: git://github.com/jewzaam/openshift-lightblue-cart.git
 License: LGPL
 License-Url: http://www.gnu.org/copyleft/lesser.txt
 Vendor: Red Hat
