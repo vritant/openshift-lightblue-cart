@@ -26,9 +26,9 @@ test `md5sum $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-metadata-${META
 # Install crud REST application
 wget http://repo1.maven.org/maven2/com/redhat/lightblue/rest/rest-crud/maven-metadata.xml -O /tmp/rest-crud-maven-metadata.xml
 CRUD_REST_APP_VERSION=$(xmllint --shell /tmp/rest-crud-maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
-wget http://search.maven.org/remotecontent?filepath=com/redhat/lightblue/rest/rest-crud/${CRUD_REST_APP_VERSION}/rest-crud-${CRUD_REST_APP_VERSION}.war -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-metadata-${CRUD_REST_APP_VERSION}.war
+wget http://search.maven.org/remotecontent?filepath=com/redhat/lightblue/rest/rest-crud/${CRUD_REST_APP_VERSION}/rest-crud-${CRUD_REST_APP_VERSION}.war -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-crud-${CRUD_REST_APP_VERSION}.war
 wget http://repo1.maven.org/maven2/com/redhat/lightblue/rest/rest-crud/${CRUD_REST_APP_VERSION}/rest-crud-${CRUD_REST_APP_VERSION}.war.md5 -O /tmp/rest-crud-${CRUD_REST_APP_VERSION}.war.md5
-test `md5sum $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-metadata-${CRUD_REST_APP_VERSION}.war | awk '{print $1}' | tr -d '\n'` = `cat /tmp/rest-crud-${CRUD_REST_APP_VERSION}.war.md5` || (echo "MD5SUM check failed for $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-metadata-${CRUD_REST_APP_VERSION}.war" && exit)
+test `md5sum $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-crud-${CRUD_REST_APP_VERSION}.war | awk '{print $1}' | tr -d '\n'` = `cat /tmp/rest-crud-${CRUD_REST_APP_VERSION}.war.md5` || (echo "MD5SUM check failed for $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-crud-${CRUD_REST_APP_VERSION}.war" && exit)
 
 # Install metadata management application (latest)
 wget http://repo1.maven.org/maven2/com/redhat/lightblue/applications/metadata-mgmt/maven-metadata.xml -O /tmp/metadata-mgmt-maven-metadata.xml
