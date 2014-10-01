@@ -15,8 +15,6 @@ locked_files:
 - jboss_cfg_backup/
 processed_templates:
 - 'metadata/jenkins_artifacts_glob.erb'
-- 'versions/shared/modules/com/redhat/lightblue/main/datasources.json.erb'
-- 'versions/shared/template/.openshift/config/modules/com/redhat/lightblue/main/datasources.json.erb'
 setup_rewritten:
 - versions/*
 dependency_dirs:
