@@ -168,6 +168,8 @@ echo "  JAVA: $JAVA"
 echo ""
 echo "  JAVA_OPTS: $JAVA_OPTS"
 echo ""
+echo "  OPENSHIFT_MONGODB_DB_USERNAME: $OPENSHIFT_MONGODB_DB_USERNAME"
+echo ""
 echo "========================================================================="
 echo ""
 
