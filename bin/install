@@ -15,21 +15,32 @@ function get_war {
     # if using SNAPSHOT, don't restrict the subset of versions
     if [ ! -z "${SNAPSHOT-}" ] && [ "$SNAPSHOT" = "true" ]; then
         echo "exec: xmllint --shell /tmp/maven-metadata.xml <<< \`echo \"cat /metadata/versioning/latest/text()\"\` | grep -v \"^[/]\" | sort | tail -n1"
-        WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/latest/text()"` | grep -v "^[/]" | sort | tail -n1) 
+        BASE_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/latest/text()"` | grep -v "^[/]" | sort | tail -n1) 
+
+        # now need to get the real version.
+        echo "exec: wget $BASE_URL/$BASE_VERSION/maven-metadata.xml -O /tmp/maven-metadata.xml"
+        wget $BASE_URL/$BASE_VERSION/maven-metadata.xml -O /tmp/maven-metadata.xml
+
+        echo "exec: xmllint --shell /tmp/maven-metadata.xml <<< \`echo \"cat /metadata/versioning/snapshotVersion/value[../extension='war']/text()\"\` | grep -v \"^[/]\" | sort | tail -n1"
+        WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/snapshotVersion/value[../extension='war']/text()"` | grep -v "^[/]" | sort | tail -n1)
     else
         echo "exec: xmllint --shell /tmp/maven-metadata.xml <<< \`echo \"cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()\"\` | grep \"^${version}\" | sort | tail -n1"
-        WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
+        BASE_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
+
+        # base and war versions are the same for this scenario (non-snapshot)
+        WAR_VERSION=$BASE_VERSION
     fi
+    echo "BASE_VERSION='${BASE_VERSION}'"
     echo "WAR_VERSION='${WAR_VERSION}'"
     ARTIFACT_ID=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/artifactId/text()"` | grep -v "^[/]")
     echo "ARTIFACT_ID='${ARTIFACT_ID}'"
     WAR_NAME=$ARTIFACT_ID-$WAR_VERSION.war
     echo "WAR_NAME='${WAR_NAME}'"
     echo "${WAR_VERSION}" > ${OPENSHIFT_JBOSSEAP_DIR}/env/${ENV_VAR}
-    echo "exec: wget $BASE_URL/$WAR_VERSION/$WAR_NAME -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/$WAR_NAME"
-    wget $BASE_URL/$WAR_VERSION/$WAR_NAME -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/$WAR_NAME
-    echo "exec: wget $BASE_URL/$WAR_VERSION/$WAR_NAME.md5 -O /tmp/$WAR_NAME.md5"
-    wget $BASE_URL/$WAR_VERSION/$WAR_NAME.md5 -O /tmp/$WAR_NAME.md5
+    echo "exec: wget $BASE_URL/$BASE_VERSION/$WAR_NAME -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/$WAR_NAME"
+    wget $BASE_URL/$BASE_VERSION/$WAR_NAME -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/$WAR_NAME
+    echo "exec: wget $BASE_URL/$BASE_VERSION/$WAR_NAME.md5 -O /tmp/$WAR_NAME.md5"
+    wget $BASE_URL/$BASE_VERSION/$WAR_NAME.md5 -O /tmp/$WAR_NAME.md5
     test `md5sum $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/${WAR_NAME} | awk '{print $1}' | tr -d '\n'` = `cat /tmp/${WAR_NAME}.md5` || (echo "MD5SUM check failed for $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/${WAR_NAME}" && exit)
 }
 
