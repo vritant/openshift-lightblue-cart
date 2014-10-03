@@ -18,8 +18,11 @@ function get_war {
     else
         WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
     fi
+    echo "WAR_VERSION='${WAR_VERSION}'"
     ARTIFACT_ID=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/artifactId/text()"` | grep -v "^[/]")
+    echo "ARTIFACT_ID='${ARTIFACT_ID}'"
     WAR_NAME=$ARTIFACT_ID-$WAR_VERSION.war
+    echo "WAR_NAME='${WAR_NAME}'"
     echo "${WAR_VERSION}" > ${OPENSHIFT_JBOSSEAP_DIR}/env/${ENV_VAR}
     echo "wget $BASE_URL/$WAR_VERSION/$WAR_NAME -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/$WAR_NAME"
     wget $BASE_URL/$WAR_VERSION/$WAR_NAME -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/$WAR_NAME
