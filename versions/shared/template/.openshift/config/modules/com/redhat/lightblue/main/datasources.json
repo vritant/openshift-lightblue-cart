@@ -17,14 +17,14 @@
      "database" : "metadata",
      "credentials" : {
        "mechanism": "MONGODB_CR_MECHANISM",
-       "userName" : "${OPENSHIFT_MONGODB_DB_USERNAME}",
-       "password": "${OPENSHIFT_MONGODB_DB_PASSWORD}",
+       "userName" : "${mongodb.user}",
+       "password": "${mongodb.pass}",
        "source" : "admin"
      },
      "server" :
         {
-           "host" : "${OPENSHIFT_MONGODB_DB_HOST}",
-           "port" : "${OPENSHIFT_MONGODB_DB_PORT}"
+           "host" : "${mongodb.host}",
+           "port" : "${mongodb.port}"
         }
    },
    "mongodata" : {
@@ -35,14 +35,14 @@
      "database" : "data",
      "credentials" : {
        "mechanism": "MONGODB_CR_MECHANISM",
-       "userName" : "${OPENSHIFT_MONGODB_DB_USERNAME}",
-       "password": "${OPENSHIFT_MONGODB_DB_PASSWORD}",
+       "userName" : "${mongodb.user}",
+       "password": "${mongodb.pass}",
        "source" : "admin"
      },
      "server" :
         {
-           "host" : "${OPENSHIFT_MONGODB_DB_HOST}",
-           "port" : "${OPENSHIFT_MONGODB_DB_PORT}"
+           "host" : "${mongodb.host}",
+           "port" : "${mongodb.port}"
         }
    }
 }

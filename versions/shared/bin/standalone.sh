@@ -157,6 +157,9 @@ if $cygwin; then
     JBOSS_MODULEPATH=`cygpath --path --windows "$JBOSS_MODULEPATH"`
 fi
 
+# Add params for mongo used by lightblue (to work around env param name quirks)
+JAVA_OPTS="$JAVA_OPTS -Dmongodb.host=${OPENSHIFT_MONGODB_DB_HOST} -Dmongodb.port=${OPENSHIFT_MONGODB_DB_PORT} -Dmongodb.user=${OPENSHIFT_MONGODB_DB_USERNAME} -Dmongodb.pass=${OPENSHIFT_MONGODB_DB_PASSWORD}"
+
 # Display our environment
 echo "========================================================================="
 echo ""
