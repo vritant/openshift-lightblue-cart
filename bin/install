@@ -14,8 +14,8 @@ function get_war {
     wget $BASE_URL/maven-metadata.xml -O /tmp/maven-metadata.xml
     # if using SNAPSHOT, don't restrict the subset of versions
     if [ ! -z "${SNAPSHOT-}" ] && [ "$SNAPSHOT" = "true" ]; then
-        echo "exec: xmllint --shell /tmp/maven-metadata.xml <<< \`echo \"cat /metadata/versioning/versions/latest/text()\"\` | sort | tail -n1"
-        WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/latest/text()"` | sort | tail -n1) 
+        echo "exec: xmllint --shell /tmp/maven-metadata.xml <<< \`echo \"cat /metadata/versioning/latest/text()\"\` | grep -v \"^[/]\" | sort | tail -n1"
+        WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/latest/text()"` | grep -v "^[/]" | sort | tail -n1) 
     else
         echo "exec: xmllint --shell /tmp/maven-metadata.xml <<< \`echo \"cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()\"\` | grep \"^${version}\" | sort | tail -n1"
         WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
