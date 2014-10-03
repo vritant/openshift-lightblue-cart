@@ -17,14 +17,14 @@
      "database" : "metadata",
      "credentials" : {
        "mechanism": "MONGODB_CR_MECHANISM",
-       "userName" : "${OPENSHIFT_MONGODB_DB_USERNAME}",
-       "password": "${OPENSHIFT_MONGODB_DB_PASSWORD}",
+       "userName" : "${env.OPENSHIFT_MONGODB_DB_USERNAME}",
+       "password": "${env.OPENSHIFT_MONGODB_DB_PASSWORD}",
        "source" : "admin"
      },
      "server" :
         {
-           "host" : "${OPENSHIFT_MONGODB_DB_HOST}",
-           "port" : "${OPENSHIFT_MONGODB_DB_PORT}"
+           "host" : "${env.OPENSHIFT_MONGODB_DB_HOST}",
+           "port" : "${env.OPENSHIFT_MONGODB_DB_PORT}"
         }
    },
    "mongodata" : {
@@ -35,14 +35,14 @@
      "database" : "data",
      "credentials" : {
        "mechanism": "MONGODB_CR_MECHANISM",
-       "userName" : "${OPENSHIFT_MONGODB_DB_USERNAME}",
-       "password": "${OPENSHIFT_MONGODB_DB_PASSWORD}",
+       "userName" : "${env.OPENSHIFT_MONGODB_DB_USERNAME}",
+       "password": "${env.OPENSHIFT_MONGODB_DB_PASSWORD}",
        "source" : "admin"
      },
      "server" :
         {
-           "host" : "${OPENSHIFT_MONGODB_DB_HOST}",
-           "port" : "${OPENSHIFT_MONGODB_DB_PORT}"
+           "host" : "${env.OPENSHIFT_MONGODB_DB_HOST}",
+           "port" : "${env.OPENSHIFT_MONGODB_DB_PORT}"
         }
    }
 }
