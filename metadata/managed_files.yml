@@ -15,6 +15,7 @@ locked_files:
 - jboss_cfg_backup/
 processed_templates:
 - 'metadata/jenkins_artifacts_glob.erb'
+- 'versions/shared/template/README.md.erb'
 setup_rewritten:
 - versions/*
 dependency_dirs:

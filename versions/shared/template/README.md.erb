@@ -1,0 +1,49 @@
+# lightblue
+
+Cloud focused data services with dynamic querying, versioned schemas, and robust security.
+
+![lightblue architecture](https://raw.githubusercontent.com/lightblue-platform/lightblue/master/docs/lightblue-puzzle.png "High Level Architecture")
+
+# Useful Links
+
+* Documentation
+    * [Overview](http://jewzaam.gitbooks.io/lightblue/)
+    * [User Guide](http://jewzaam.gitbooks.io/lightblue-user-guide/)
+    * [Developer Manual](http://jewzaam.gitbooks.io/lightblue-developer-manual/)
+* Forums
+    * [User](http://forum.lightblue.io/)
+    * [Developer](http://dev.forum.lightblue.io/)
+* [Source](https://github.com/lightblue-platform/)
+
+# Interacting with Metadata
+Metadata is like a schema in a relational database.  It defines the structure of your data.  To make this more meaningful we'll create some simple metadata first and then add some data.  Then exploring the API's will actually do something!
+
+## Create First Entity: country
+```
+curl -H Content-Type:application/json -X PUT http://<%= ENV['OPENSHIFT_GEAR_DNS'] %>/rest/metadata/country/1.0.0 -d @src/main/data/country.json
+```
+
+## Create First Data: US and CA
+```
+curl -H Content-Type:application/json -X PUT http://<%= ENV['OPENSHIFT_GEAR_DNS'] %>/rest/data/country/1.0.0 -d @src/main/data/country-data.json
+```
+
+## List Entity Names
+```
+curl http://<%= ENV['OPENSHIFT_GEAR_DNS'] %>/rest/metadata/
+```
+
+## List Versions: country
+```
+curl http://<%= ENV['OPENSHIFT_GEAR_DNS'] %>/rest/metadata/country/
+```
+
+## View Metadata: country version 1.0.0
+```
+curl http://<%= ENV['OPENSHIFT_GEAR_DNS'] %>/rest/metadata/country/1.0.0
+```
+
+## Find Data: US
+```
+curl http://<%= ENV['OPENSHIFT_GEAR_DNS'] %>/rest/data/find/country/1.0.0?Q=iso2Code:US
+```
