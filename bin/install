@@ -2,6 +2,24 @@
 
 source $OPENSHIFT_JBOSSEAP_DIR/bin/util
 
+# Name: get_war
+# Description: gets the most recent version of war with this cart's major and minor version
+# Parameters:
+#   $1 - URL to root director on central repository (i.e. the dir where maven-metdata.xml resides)
+#   $2 - Name of env variable to store version in
+function get_war {
+    BASE_URL=$1
+    ENV_VAR=$2
+    wget $BASE_URL/maven-metadata.xml -O /tmp/maven-metadata.xml
+    WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
+    ARTIFACT_ID=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/actifactId/text()"`)
+    WAR_NAME=$ARTIFACT_ID-$WAR_VERSION.war
+    echo "${WAR_VERSION}" > ${OPENSHIFT_JBOSSEAP_DIR}/env/${ENV_VAR}
+    wget $BASE_URL/$WAR_VERSION/$WAR_NAME -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/$WAR_NAME
+    wget $BASE_URL/$WAR_VERSION/$WAR_NAME.md5 -O /tmp/$WAR_NAME.md5
+    test `md5sum $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/${WAR_NAME} | awk '{print $1}' | tr -d '\n'` = `cat /tmp/${WAR_NAME}.md5` || (echo "MD5SUM check failed for $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/${WAR_NAME}" && exit)
+}
+
 case "$1" in
   -v|--version)
     version="$2"
@@ -17,36 +35,16 @@ cp ${OPENSHIFT_JBOSSEAP_DIR}/standalone/configuration/standalone.xml ${OPENSHIFT
 sed -i "s/{APP_NAME}/${OPENSHIFT_APP_NAME}/g" ${OPENSHIFT_JBOSSEAP_DIR}/template/pom.xml
 
 # Install metadata REST application
-wget http://repo1.maven.org/maven2/com/redhat/lightblue/rest/rest-metadata/maven-metadata.xml -O /tmp/rest-metadata-maven-metadata.xml
-METADATA_REST_APP_VERSION=$(xmllint --shell /tmp/rest-metadata-maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
-echo "${METADATA_REST_APP_VERSION}" > ${OPENSHIFT_JBOSSEAP_DIR}/env/OPENSHIFT_LIGHTBLUE_METADATA_REST_APP_VERSION
-wget http://search.maven.org/remotecontent?filepath=com/redhat/lightblue/rest/rest-metadata/${METADATA_REST_APP_VERSION}/rest-metadata-${METADATA_REST_APP_VERSION}.war -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-metadata-${METADATA_REST_APP_VERSION}.war
-wget http://repo1.maven.org/maven2/com/redhat/lightblue/rest/rest-metadata/${METADATA_REST_APP_VERSION}/rest-metadata-${METADATA_REST_APP_VERSION}.war.md5 -O /tmp/rest-metadata-${METADATA_REST_APP_VERSION}.war.md5
-test `md5sum $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-metadata-${METADATA_REST_APP_VERSION}.war | awk '{print $1}' | tr -d '\n'` = `cat /tmp/rest-metadata-${METADATA_REST_APP_VERSION}.war.md5` || (echo "MD5SUM check failed for $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-metadata-${METADATA_REST_APP_VERSION}.war" && exit)
+get_war http://repo1.maven.org/maven2/com/redhat/lightblue/rest/rest-metadata OPENSHIFT_LIGHTBLUE_METADATA_REST_APP_VERSION
 
 # Install crud REST application
-wget http://repo1.maven.org/maven2/com/redhat/lightblue/rest/rest-crud/maven-metadata.xml -O /tmp/rest-crud-maven-metadata.xml
-CRUD_REST_APP_VERSION=$(xmllint --shell /tmp/rest-crud-maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
-echo "${CRUD_REST_APP_VERSION}" > ${OPENSHIFT_JBOSSEAP_DIR}/env/OPENSHIFT_LIGHTBLUE_CRUD_REST_APP_VERSION
-wget http://search.maven.org/remotecontent?filepath=com/redhat/lightblue/rest/rest-crud/${CRUD_REST_APP_VERSION}/rest-crud-${CRUD_REST_APP_VERSION}.war -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-crud-${CRUD_REST_APP_VERSION}.war
-wget http://repo1.maven.org/maven2/com/redhat/lightblue/rest/rest-crud/${CRUD_REST_APP_VERSION}/rest-crud-${CRUD_REST_APP_VERSION}.war.md5 -O /tmp/rest-crud-${CRUD_REST_APP_VERSION}.war.md5
-test `md5sum $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-crud-${CRUD_REST_APP_VERSION}.war | awk '{print $1}' | tr -d '\n'` = `cat /tmp/rest-crud-${CRUD_REST_APP_VERSION}.war.md5` || (echo "MD5SUM check failed for $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/rest-crud-${CRUD_REST_APP_VERSION}.war" && exit)
+get_war http://repo1.maven.org/maven2/com/redhat/lightblue/rest/rest-crud OPENSHIFT_LIGHTBLUE_CRUD_REST_APP_VERSION
 
 # Install metadata management application (latest)
-wget http://repo1.maven.org/maven2/com/redhat/lightblue/applications/metadata-mgmt/maven-metadata.xml -O /tmp/metadata-mgmt-maven-metadata.xml
-METADATA_MANAGEMENT_APP_VERSION=$(xmllint --shell /tmp/metadata-mgmt-maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
-echo "${METADATA_MANAGEMENT_APP_VERSION}" > ${OPENSHIFT_JBOSSEAP_DIR}/env/OPENSHIFT_LIGHTBLUE_METADATA_MANAGEMENT_APP_VERSION
-wget http://search.maven.org/remotecontent?filepath=com/redhat/lightblue/applications/metadata-mgmt/${METADATA_MANAGEMENT_APP_VERSION}/metadata-mgmt-${METADATA_MANAGEMENT_APP_VERSION}.war -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/metadata-mgmt-${METADATA_MANAGEMENT_APP_VERSION}.war
-wget http://repo1.maven.org/maven2/com/redhat/lightblue/applications/metadata-mgmt/${METADATA_MANAGEMENT_APP_VERSION}/metadata-mgmt-${METADATA_MANAGEMENT_APP_VERSION}.war.md5 -O /tmp/metadata-mgmt-${METADATA_REST_APP_VERSION}.war.md5
-test `md5sum $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/metadata-mgmt-${METADATA_MANAGEMENT_APP_VERSION}.war | awk '{print $1}' | tr -d '\n'` = `cat /tmp/metadata-mgmt-${METADATA_REST_APP_VERSION}.war.md5` || (echo "MD5SUM check failed for $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/metadata-mgmt-${METADATA_MANAGEMENT_APP_VERSION}.war" && exit)
+get_war http://repo1.maven.org/maven2/com/redhat/lightblue/applications/metadata-mgmt OPENSHIFT_LIGHTBLUE_METADATA_MANAGEMENT_APP_VERSION
 
 # Install crud management application (FUTURE)
-#wget http://repo1.maven.org/maven2/com/redhat/lightblue/applications/crud-mgmt/maven-metadata.xml -O /tmp/crud-mgmt-maven-metadata.xml
-#METADATA_CRUD_APP_VERSION=$(xmllint --shell /tmp/crud-mgmt-maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
-#echo "${METADATA_CRUD_APP_VERSION}" > ${OPENSHIFT_JBOSSEAP_DIR}/env/OPENSHIFT_LIGHTBLUE_METADATA_CRUD_APP_VERSION
-#wget http://search.maven.org/remotecontent?filepath=com/redhat/lightblue/applications/crud-mgmt/${METADATA_CRUD_APP_VERSION}/crud-mgmt-${METADATA_CRUD_APP_VERSION}.war -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/crud-mgmt-${METADATA_CRUD_APP_VERSION}.war
-#wget http://repo1.maven.org/maven2/com/redhat/lightblue/applications/crud-mgmt/${METADATA_CRUD_APP_VERSION}/crud-mgmt-${METADATA_CRUD_APP_VERSION}.war.md5 -O /tmp/crud-mgmt-${METADATA_REST_APP_VERSION}.war.md5
-#test `md5sum $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/crud-mgmt-${METADATA_CRUD_APP_VERSION}.war | awk '{print $1}' | tr -d '\n'` = `cat /tmp/crud-mgmt-${METADATA_REST_APP_VERSION}.war.md5` || (echo "MD5SUM check failed for $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/crud-mgmt-${METADATA_CRUD_APP_VERSION}.war" && exit)
+#get_war http://repo1.maven.org/maven2/com/redhat/lightblue/applications/crud-mgmt OPENSHIFT_LIGHTBLUE_METADATA_CRUD_APP_VERSION
 
 # Create and install the initial template WAR
 pushd $OPENSHIFT_JBOSSEAP_DIR/versions/${version}/template/src/main/webapp 1>/dev/null
