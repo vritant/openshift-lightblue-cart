@@ -12,7 +12,12 @@ function get_war {
     ENV_VAR=$2
     echo "wget $BASE_URL/maven-metadata.xml -O /tmp/maven-metadata.xml"
     wget $BASE_URL/maven-metadata.xml -O /tmp/maven-metadata.xml
-    WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
+    # if using SNAPSHOT, don't restrict the subset of versions
+    if [ $SNAPSHOT="true" ]; then
+        WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | sort | tail -n1) 
+    else
+        WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
+    fi
     ARTIFACT_ID=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/artifactId/text()"` | grep -v "^[/]")
     WAR_NAME=$ARTIFACT_ID-$WAR_VERSION.war
     echo "${WAR_VERSION}" > ${OPENSHIFT_JBOSSEAP_DIR}/env/${ENV_VAR}
@@ -37,17 +42,23 @@ cp ${OPENSHIFT_JBOSSEAP_DIR}/standalone/configuration/standalone.xml ${OPENSHIFT
 
 sed -i "s/{APP_NAME}/${OPENSHIFT_APP_NAME}/g" ${OPENSHIFT_JBOSSEAP_DIR}/template/pom.xml
 
+# if you want the latest snapshot simply set env var SNAPSHOT to the string "true"
+BASE_MAVEN_URL=http://repo1.maven.org/maven2
+if [ $SNAPSHOT="true" ]; then
+    BASE_MAVEN_URL=https://oss.sonatype.org/service/local/repositories/snapshots/content
+fi
+
 # Install metadata REST application
-get_war http://repo1.maven.org/maven2/com/redhat/lightblue/rest/rest-metadata OPENSHIFT_LIGHTBLUE_METADATA_REST_APP_VERSION
+get_war $BASE_MAVEN_URL/com/redhat/lightblue/rest/rest-metadata OPENSHIFT_LIGHTBLUE_METADATA_REST_APP_VERSION
 
 # Install crud REST application
-get_war http://repo1.maven.org/maven2/com/redhat/lightblue/rest/rest-crud OPENSHIFT_LIGHTBLUE_CRUD_REST_APP_VERSION
+get_war $BASE_MAVEN_URL/com/redhat/lightblue/rest/rest-crud OPENSHIFT_LIGHTBLUE_CRUD_REST_APP_VERSION
 
 # Install metadata management application (latest)
-get_war http://repo1.maven.org/maven2/com/redhat/lightblue/applications/metadata-mgmt OPENSHIFT_LIGHTBLUE_METADATA_MANAGEMENT_APP_VERSION
+get_war $BASE_MAVEN_URL/com/redhat/lightblue/applications/metadata-mgmt OPENSHIFT_LIGHTBLUE_METADATA_MANAGEMENT_APP_VERSION
 
 # Install crud management application (FUTURE)
-#get_war http://repo1.maven.org/maven2/com/redhat/lightblue/applications/crud-mgmt OPENSHIFT_LIGHTBLUE_METADATA_CRUD_APP_VERSION
+#get_war $BASE_MAVEN_URL/com/redhat/lightblue/applications/crud-mgmt OPENSHIFT_LIGHTBLUE_METADATA_CRUD_APP_VERSION
 
 # Create and install the initial template WAR
 pushd $OPENSHIFT_JBOSSEAP_DIR/versions/${version}/template/src/main/webapp 1>/dev/null
