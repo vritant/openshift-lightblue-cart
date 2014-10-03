@@ -10,12 +10,15 @@ source $OPENSHIFT_JBOSSEAP_DIR/bin/util
 function get_war {
     BASE_URL=$1
     ENV_VAR=$2
+    echo "wget $BASE_URL/maven-metadata.xml -O /tmp/maven-metadata.xml"
     wget $BASE_URL/maven-metadata.xml -O /tmp/maven-metadata.xml
     WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
     ARTIFACT_ID=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/actifactId/text()"`)
     WAR_NAME=$ARTIFACT_ID-$WAR_VERSION.war
     echo "${WAR_VERSION}" > ${OPENSHIFT_JBOSSEAP_DIR}/env/${ENV_VAR}
+    echo "wget $BASE_URL/$WAR_VERSION/$WAR_NAME -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/$WAR_NAME"
     wget $BASE_URL/$WAR_VERSION/$WAR_NAME -O $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/$WAR_NAME
+    echo "wget $BASE_URL/$WAR_VERSION/$WAR_NAME.md5 -O /tmp/$WAR_NAME.md5"
     wget $BASE_URL/$WAR_VERSION/$WAR_NAME.md5 -O /tmp/$WAR_NAME.md5
     test `md5sum $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/${WAR_NAME} | awk '{print $1}' | tr -d '\n'` = `cat /tmp/${WAR_NAME}.md5` || (echo "MD5SUM check failed for $OPENSHIFT_JBOSSEAP_DIR/standalone/deployments/${WAR_NAME}" && exit)
 }
