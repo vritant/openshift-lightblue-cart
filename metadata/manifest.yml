@@ -33,7 +33,7 @@ Provides:
 - jboss-eap6-standalone
 - lightblue
 Requires:
-- mongodb-2.4
+- mongodb
 Publishes:
   publish-jboss-cluster:
     Type: NET_TCP:jbosseap-cluster-info
