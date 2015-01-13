@@ -5,18 +5,22 @@ source $OPENSHIFT_JBOSSEAP_DIR/bin/util
 # Name: get_war
 # Description: gets the most recent version of war with this cart's major and minor version
 # Parameters:
-#   $1 - URL to root director on central repository (i.e. the dir where maven-metdata.xml resides)
-#   $2 - Name of env variable to store version in
+#   $1 - URL to root directory on central repository (i.e. the dir where maven-metdata.xml resides)
+#   $2 - Name of env variable in which to store version (latest)
 function get_war {
     BASE_URL=$1
     ENV_VAR=$2
     echo "exec: wget $BASE_URL/maven-metadata.xml -O /tmp/maven-metadata.xml"
     wget $BASE_URL/maven-metadata.xml -O /tmp/maven-metadata.xml
-    # if using SNAPSHOT, don't restrict the subset of versions
-    if [ ! -z "${SNAPSHOT-}" ] && [ "$SNAPSHOT" = "true" ]; then
-        echo "exec: xmllint --shell /tmp/maven-metadata.xml <<< \`echo \"cat /metadata/versioning/latest/text()\"\` | grep -v \"^[/]\" | sort | tail -n1"
-        BASE_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/latest/text()"` | grep -v "^[/]" | sort | tail -n1) 
 
+    # always simply get the latest version that has been released for the given URL
+    # (necessary because rest and web app versions are not the same anymore)
+
+    echo "exec: xmllint --shell /tmp/maven-metadata.xml <<< \`echo \"cat /metadata/versioning/latest/text()\"\` | grep -v \"^[/]\" | sort | tail -n1"
+    BASE_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/latest/text()"` | grep -v "^[/]" | sort | tail -n1) 
+
+    # if using SNAPSHOT, have to do another step to get real version
+    if [ ! -z "${SNAPSHOT-}" ] && [ "$SNAPSHOT" = "true" ]; then
         # now need to get the real version.
         echo "exec: wget $BASE_URL/$BASE_VERSION/maven-metadata.xml -O /tmp/maven-metadata.xml"
         wget $BASE_URL/$BASE_VERSION/maven-metadata.xml -O /tmp/maven-metadata.xml
@@ -24,9 +28,6 @@ function get_war {
         echo "exec: xmllint --shell /tmp/maven-metadata.xml <<< \`echo \"cat /metadata/versioning/snapshotVersions/snapshotVersion/value[../extension='war']/text()\"\` | grep -v \"^[/]\" | sort | tail -n1"
         WAR_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/snapshotVersions/snapshotVersion/value[../extension='war']/text()"` | grep -v "^[/]" | sort | tail -n1)
     else
-        echo "exec: xmllint --shell /tmp/maven-metadata.xml <<< \`echo \"cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()\"\` | grep \"^${version}\" | sort | tail -n1"
-        BASE_VERSION=$(xmllint --shell /tmp/maven-metadata.xml <<< `echo "cat /metadata/versioning/versions/version[starts-with(text(), '${version}')]/text()"` | grep "^${version}" | sort | tail -n1)
-
         # base and war versions are the same for this scenario (non-snapshot)
         WAR_VERSION=$BASE_VERSION
     fi
