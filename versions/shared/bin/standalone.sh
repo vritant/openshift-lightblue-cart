@@ -158,7 +158,7 @@ if $cygwin; then
 fi
 
 # Add params for mongo used by lightblue (to work around env param name quirks)
-JAVA_OPTS="$JAVA_OPTS -Dmongodb.host=${OPENSHIFT_MONGODB_DB_HOST} -Dmongodb.port=${OPENSHIFT_MONGODB_DB_PORT} -Dmongodb.user=${OPENSHIFT_MONGODB_DB_USERNAME} -Dmongodb.pass=${OPENSHIFT_MONGODB_DB_PASSWORD}"
+JAVA_OPTS="$JAVA_OPTS -Dmongodb.host=${OPENSHIFT_MONGODB_DB_HOST} -Dmongodb.port=${OPENSHIFT_MONGODB_DB_PORT} -Dmongodb.user=${OPENSHIFT_MONGODB_DB_USERNAME} -Dmongodb.pass=${OPENSHIFT_MONGODB_DB_PASSWORD} -Dlightblue.host=${OPENSHIFT_JBOSSEAP_IP} -Dlightblue.port=${OPENSHIFT_JBOSSEAP_HTTP_PORT}"
 
 # Display our environment
 echo "========================================================================="

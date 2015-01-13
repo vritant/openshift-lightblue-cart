@@ -9,8 +9,6 @@ Check out this [Getting Started](https://developers.openshift.com/en/getting-sta
 # Creating a lightblue application
 With this downloadable cart it's really simple.  For now, I'm documenting the way to do it with the ```rhc``` command.
 
-NOTE: this cart works only with lightblue version 1.1 or greater.  At this time 1.1 is not released, so snapshots must be used.
-
 ```
 rhc app create -e SNAPSHOT=true https://raw.githubusercontent.com/jewzaam/openshift-lightblue-cart/master/metadata/manifest.yml -a <YOUR APP NAME>
 ```
