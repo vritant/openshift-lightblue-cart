@@ -15,6 +15,18 @@ rhc app create -e SNAPSHOT=true https://raw.githubusercontent.com/lightblue-plat
 
 That's it.  This deploys JBoss EAP and MongoDB then installs and configures lightblue.  After this command completes you have a working instance of lightblue!  Check out the README.md at the root of your gear's source for some quick things to do to try out lightblue and links to documentation, forums, and source.
 
+## NOTE for Developers!
+If you fork this you'll need to use something to set the `source-url` correctly in your manifest.
+
+Info on how the download works: https://developers.openshift.com/en/get-involved-extend-openshift.html#how-cartridges-are-downloaded
+
+Easy way to work around issues: https://developers.openshift.com/en/get-involved-extend-openshift.html#the-cartridge-reflector
+
+For example, to install a fork of this repo for user 'jewzaam' with branch 'lightblue-1.2':
+```
+rhc app create http://cartreflect-claytondev.rhcloud.com/github/jewzaam/openshift-lightblue-cart?commit=lightblue-1.2 -a test
+```
+
 # License
 
 The license of lightblue is [GPLv3](https://www.gnu.org/licenses/gpl.html).  See LICENSE in root of project for the full text.
