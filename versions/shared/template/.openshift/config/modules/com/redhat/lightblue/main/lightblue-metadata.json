@@ -5,40 +5,5 @@
     ],
     "type" : "com.redhat.lightblue.mongo.config.MongoMetadataConfiguration",
     "dataSource" : "metadata",
-    "collection": "metadata",
-    "roleMap": {
-        "metadata.find.dependencies": [
-            "anyone"
-        ],
-        "metadata.find.roles": [
-            "anyone"
-        ],
-        "metadata.find.entityNames": [
-            "anyone"
-        ],
-        "metadata.find.entityVersions": [
-            "anyone"
-        ],
-        "metadata.find.entityMetadata": [
-            "anyone"
-        ],
-        "metadata.insert": [
-            "anyone"
-        ],
-        "metadata.insert.schema": [
-            "anyone"
-        ],
-        "metadata.update.entityInfo": [
-            "anyone"
-        ],
-        "metadata.update.schemaStatus": [
-            "anyone"
-        ],
-        "metadata.update.defaultVersion": [
-            "anyone"
-        ],
-        "metadata.delete.entity": [
-            "anyone"
-        ]
-    }
+    "collection": "metadata"
 }
