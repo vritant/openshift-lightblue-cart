@@ -10,7 +10,7 @@ Check out this [Getting Started](https://developers.openshift.com/en/getting-sta
 With this downloadable cart it's really simple.  For now, I'm documenting the way to do it with the ```rhc``` command.
 
 ```
-rhc app create -e SNAPSHOT=true https://raw.githubusercontent.com/jewzaam/openshift-lightblue-cart/master/metadata/manifest.yml -a <YOUR APP NAME>
+rhc app create -e SNAPSHOT=true https://raw.githubusercontent.com/lightblue-platform/openshift-lightblue-cart/master/metadata/manifest.yml -a <YOUR APP NAME>
 ```
 
 That's it.  This deploys JBoss EAP and MongoDB then installs and configures lightblue.  After this command completes you have a working instance of lightblue!  Check out the README.md at the root of your gear's source for some quick things to do to try out lightblue and links to documentation, forums, and source.
